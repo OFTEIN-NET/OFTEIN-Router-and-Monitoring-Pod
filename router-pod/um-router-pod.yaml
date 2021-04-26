@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: router-pod-um
+spec:
+  volumes:
+    - name: configDir
+      mountPath: "./router-pod/config/"
+  containers:
+    - name: quagga
+      image:
+      command:
+      volumeMounts:
+        - mountPath: "/config"
+          name: configDir
+  nodeName: k8s-worker-um-1

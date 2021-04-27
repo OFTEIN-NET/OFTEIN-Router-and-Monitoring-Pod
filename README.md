@@ -73,7 +73,7 @@ Access the pod for initial configuration. In this case, we are accessing the qua
 kubectl exec --stdin --tty -n rpki quagga-bgp-um-sandbox-3 -- /bin/bash
 ```
 
-After applying the router pod yaml file, copy daemons and debian.conf from [/companion-files](https://github.com/skywood123/OFTEIN-Router-and-Monitoring-Pod/tree/temporary/router-pod/companion-files) into /etc/quagga/.Because of using persistent volume to store the configuration file, the original files in the directory is wipe out during mounting the persistent volume, so we need to manually move the 2 files into the directory during initial configuration.
+After applying the router pod yaml file with ```kubectl apply -f um-sandbox-3.yaml```, copy daemons and debian.conf from [/companion-files](https://github.com/skywood123/OFTEIN-Router-and-Monitoring-Pod/tree/temporary/router-pod/companion-files) into /etc/quagga/.Because of using persistent volume to store the configuration file, the original files in the directory is wipe out during mounting the persistent volume, so we need to manually move the 2 files into the directory during initial configuration.
 
 ```
 chown quagga.quaggavty /etc/quagga/*.conf
@@ -138,7 +138,7 @@ ifconfig switch 192.168.100.1 netmask 255.255.255.0 up
 To apply the configuration please use this `kubectl` command:
 
 ```shell script
-kubectl apply -f um-router-pod.yaml
+kubectl apply -f um-sandbox-3.yaml
 ```
 
 ## Troubleshooting

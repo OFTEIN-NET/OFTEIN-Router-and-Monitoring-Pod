@@ -1,0 +1,70 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartx-microbox-rub-1-pvc
+  namespace: rpki
+spec:
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quagga-bgp-smartx-microbox-rub-1
+  namespace: rpki
+  labels:
+    app: quagga-bgp-smartx-microbox-rub-1
+spec:
+      nodeName: smartx-microbox-rub-1
+      containers:
+      - name: quagga
+        image: osrg/quagga
+        ports:
+        - containerPort: 179
+        - containerPort: 2605
+        - containerPort: 2601
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+              - NET_BROADCAST
+              - NET_RAW
+              - SYS_ADMIN
+        volumeMounts:
+        - name: smartx-microbox-rub-1-storage
+          mountPath: /etc/quagga/
+      - name: ovs
+        image: globocom/openvswitch
+        ports:
+        - containerPort: 22
+        - containerPort: 5566
+          protocol: UDP
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+      volumes:
+       - name: smartx-microbox-rub-1-storage
+         persistentVolumeClaim:
+           claimName: smartx-microbox-rub-1-pvc
+---
+#
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: quagga-bgp-smartx-microbox-rub-1-service
+#  namespace: rpki
+#spec:
+#  selector:
+#    app: quagga-bgp-smartx-microbox-rub-1
+#  ports:
+#    - protocol: TCP
+#      port: 179
+#      targetPort: 179
+#
+

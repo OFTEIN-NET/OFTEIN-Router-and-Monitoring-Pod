@@ -9,7 +9,7 @@ For monitoring purpose, [Grafana](https://github.com/prometheus-community/helm-c
 
 ## Configuration
 
-Example of router configuration for UM site worker node `um-sandbox-3.yaml` is shown below. In this yaml file, it contains 2 containers which is quagga router container and openvswitch(OVS) container. Quagga container bind with a persistent volume for configuration storage.
+Example of router configuration for UM site worker node `um-sandbox-3.yaml` is shown below. In this yaml file, it contains 2 containers which is quagga router container and openvswitch(OVS) container. Quagga container bind with a persistent volume for configuration storage. Quagga container doesn't allow changing the vxlan destination port(by default Kubernetes Calico CNI is blocking overlay traffic between pods), hence ovs is used here to form overlay VXLAN tunnels between router pods. 
 
 ```yaml
 ---
@@ -73,7 +73,7 @@ Access the pod for initial configuration. In this case, we are accessing the qua
 kubectl exec --stdin --tty -n rpki quagga-bgp-um-sandbox-3 -- /bin/bash
 ```
 
-After applying the router pod yaml file, copy daemons and debian.conf from [/companion-files](https://github.com/skywood123/OFTEIN-Router-and-Monitoring-Pod/tree/temporary/router-pod/companion-files) into /etc/quagga/.Because of using persistent volume to store the configuration file, the original files in the directory is wipe out during mounting the persistent volume, so we need to manually move the 2 files into the directory.
+After applying the router pod yaml file, copy daemons and debian.conf from [/companion-files](https://github.com/skywood123/OFTEIN-Router-and-Monitoring-Pod/tree/temporary/router-pod/companion-files) into /etc/quagga/.Because of using persistent volume to store the configuration file, the original files in the directory is wipe out during mounting the persistent volume, so we need to manually move the 2 files into the directory during initial configuration.
 
 ```
 chown quagga.quaggavty /etc/quagga/*.conf
@@ -121,7 +121,7 @@ Run the promtail binary
 ```
 sudo ./promtail -config.file ./config-promtail.yml
 ```
-Next, configure the Overlay Vxlan connection between the router pods. If using hub-and-spoke topology, hub router pod need to point to all spoke routers and spoke point back to hub router pod.
+Next, configure the Overlay Vxlan connection between the router pods. If using hub-and-spoke topology, hub router pod need to point to all spoke routers and spoke router pods point back to hub router pod.
 The openvswitch container image comes with ssh only. Access the ovs container using ssh.
 
 ```

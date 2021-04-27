@@ -7,6 +7,7 @@ Repository to provision router and monitoring pods in OF@TEIN++ multiple Kuberne
 
 This is tested in Kubernetes 1.19.3 with Calico as the network CNI.
 For monitoring purpose, [Grafana](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack#configuration) and [Loki](https://grafana.com/docs/loki/latest/installation/helm/) should deployed prior to this. 
+For persistent volume, provisioner should deployed prior to this for dynamic persistent volume. For example, [nfs-client-provisioner](https://github.com/helm/charts/tree/master/stable/nfs-client-provisioner)
 
 ## Configuration
 

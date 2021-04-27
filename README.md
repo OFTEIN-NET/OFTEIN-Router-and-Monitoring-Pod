@@ -9,7 +9,7 @@ For monitoring purpose, [Grafana](https://github.com/prometheus-community/helm-c
 
 ## Configuration
 
-Example of router configuration for UM site worker node `um-router-pod.yaml` is shown below:
+Example of router configuration for UM site worker node `um-sandbox-3.yaml` is shown below. In this yaml file, it contains 2 containers which is quagga router container and openvswitch(OVS) container. Quagga container bind with a persistent volume for configuration storage.
 
 ```yaml
 ---
@@ -68,7 +68,7 @@ spec:
            claimName: um-sandbox-3-pvc
 
 ```
-Access the pod for initial configuration.
+Access the pod for initial configuration. In this case, we are accessing the quagga container.
 ```
 kubectl exec --stdin --tty -n rpki quagga-bgp-um-sandbox-3 -- /bin/bash
 ```
@@ -80,13 +80,10 @@ chown quagga.quaggavty /etc/quagga/*.conf
 chmod 640 /etc/quagga/*.conf
 /etc/init.d/quagga start
 apt-get install ssh -y
-ssh localhost
-ovs-vsctl add-br switch
+```
 
-ovs-vsctl add-port switch vxlan-um-sandbox -- set interface vxlan-um-sandbox type=vxlan \
-options:remote_ip=10.144.227.165 options:dst_port=5566
-
-ifconfig switch 192.168.100.7 netmask 255.255.255.0 up 
+Install the promtail binary to scrape the static log file from the quagga software.
+```
 cd /usr/local/bin
 apt-get install nano curl -y
 sudo curl -fSL -o promtail.gz "https://github.com/grafana/loki/releases/download/v1.6.1/promtail-linux-amd64.zip"
@@ -120,6 +117,22 @@ scrape_configs:
 
 ```
 
+Run the promtail binary 
+```
+sudo ./promtail -config.file ./config-promtail.yml
+```
+Next, configure the Overlay Vxlan connection between the router pods. If using hub-and-spoke topology, hub router pod need to point to all spoke routers and spoke point back to hub router pod.
+The openvswitch container image comes with ssh only. Access the ovs container using ssh.
+
+```
+ssh localhost
+ovs-vsctl add-br switch
+
+ovs-vsctl add-port switch vxlan-drukren -- set interface vxlan-drukren type=vxlan \
+  options:remote_ip=10.144.180.161 options:dst_port=5566 
+
+ifconfig switch 192.168.100.1 netmask 255.255.255.0 up 
+```
 ## Usage
 
 To apply the configuration please use this `kubectl` command:

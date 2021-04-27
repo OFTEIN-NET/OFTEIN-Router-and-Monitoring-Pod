@@ -73,7 +73,7 @@ Access the pod for initial configuration.
 kubectl exec --stdin --tty -n rpki quagga-bgp-um-sandbox-3 -- /bin/bash
 ```
 
-After applying the router pod yaml file, copy daemons.txt and debian.conf from /companion-files into /etc/quagga/.Because of using persistent volume to store the configuration file, the original files in the directory is wipe out during mounting the persistent volume, so we need to manually move the 2 files into the directory.
+After applying the router pod yaml file, copy daemons.txt and debian.conf from [/companion-files](https://github.com/skywood123/OFTEIN-Router-and-Monitoring-Pod/tree/temporary/router-pod/companion-files) into /etc/quagga/.Because of using persistent volume to store the configuration file, the original files in the directory is wipe out during mounting the persistent volume, so we need to manually move the 2 files into the directory.
 
 ```
 chown quagga.quaggavty /etc/quagga/*.conf
@@ -94,6 +94,7 @@ sudo gunzip promtail.gz
 sudo chmod a+x promtail
 sudo nano config-promtail.yml
 ```
+Paste the promtail yaml configuration below.
 
 ```yaml
 #config-promtail.yaml template		https://sbcode.net/grafana/install-promtail-service/
